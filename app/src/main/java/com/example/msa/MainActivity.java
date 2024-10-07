@@ -19,6 +19,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase bancoDados;
     public ListView lvDados;
+    TextView tvHorasTotais;
     LinearLayout layoutHome;
     LinearLayout layoutInputDados;
     TextView tvRes;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+        tvHorasTotais = (TextView) findViewById(R.id.tvHorasTotais);
         lvDados = (ListView) findViewById(R.id.lvDados);
         etTime = (EditText) findViewById(R.id.etTime);
         btnEnviardados = (Button) findViewById(R.id.btnEnviardados);
@@ -96,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
     }
     public void listDados(){
         btnHomeCad.setText("Cadastro");
+
+        float num1,total = 0;
         try{
             bancoDados = openOrCreateDatabase("msa", MODE_PRIVATE, null);
             Cursor meuCursor = bancoDados.rawQuery("SELECT hDormida FROM horaDormida ORDER BY id DESC LIMIT 7", null);
@@ -105,11 +109,16 @@ public class MainActivity extends AppCompatActivity {
             meuCursor.moveToFirst();
             while(meuCursor!=null){
                 linhas.add(meuCursor.getString(0));
+                num1 = Float.parseFloat(meuCursor.getString(0).replaceAll(":","."));
+                total = num1 + total;
                 meuCursor.moveToNext();
+
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        tvHorasTotais.setText(String.format("%.2f horas dormidas pela semana",total/7).replaceFirst(",",":"));
     }
 }
